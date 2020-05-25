@@ -1,3 +1,5 @@
+import 'package:budgetapp/log_in_screen.dart';
+import 'package:budgetapp/main_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,28 +15,11 @@ class BudgetApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: SplashScreen(),
-    );
-  }
-}
-
-class SplashScreen extends StatefulWidget {
-  SplashScreen({Key key}) : super(key: key);
-
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Welcome to My Budget App!"),
-      ),
-      body: Center(
-        child: Text("My Budget"),
-      ),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => LogInScreen(),
+        '/main': (context) => MainScreen(),
+      },
     );
   }
 }
