@@ -28,6 +28,7 @@ flutter_icons:
   adaptive_icon_foreground: "assets/launcher/foreground.png"
 
 dependencies:
+  firebase_core: ^0.2.5
   flutter_launcher_icons: "^0.7.0"
   flutter:
     sdk: flutter
