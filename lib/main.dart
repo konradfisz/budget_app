@@ -1,5 +1,7 @@
-import 'package:budgetapp/log_in_screen.dart';
+import 'package:budgetapp/log_in/log_in_sign_up.dart';
 import 'package:budgetapp/main_screen.dart';
+import 'package:budgetapp/root_page.dart';
+import 'package:budgetapp/services/auth.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,11 +17,9 @@ class BudgetApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => LogInScreen(),
-        '/main': (context) => MainScreen(),
-      },
+      home: new RootPage(
+        auth: new Auth(),
+      ),
     );
   }
 }

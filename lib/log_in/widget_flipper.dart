@@ -1,44 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' show pi;
 
-class LogInScreen extends StatefulWidget {
-  LogInScreen({Key key}) : super(key: key);
-
-  @override
-  _LogInScreenState createState() => _LogInScreenState();
-}
-
-class _LogInScreenState extends State<LogInScreen>
-    with SingleTickerProviderStateMixin {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Welcome to My Budget App!"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Container(
-              width: 200,
-              height: 200,
-              child: WidgetFlipper(
-                frontWidget:
-                    CircleAvatar(child: Image.asset("assets/google_logo.png")),
-                backWidget: CircleAvatar(),
-              ),
-            ),
-            SizedBox(height: 20),
-            SignInButton(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class WidgetFlipper extends StatefulWidget {
   WidgetFlipper({
     Key key,

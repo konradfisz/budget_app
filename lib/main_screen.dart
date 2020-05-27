@@ -1,8 +1,15 @@
+import 'package:budgetapp/main_header.dart';
+import 'package:budgetapp/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainScreen extends StatefulWidget {
-  MainScreen({Key key}) : super(key: key);
+  MainScreen({Key key, this.auth, this.userId, this.logoutCallback})
+      : super(key: key);
+
+  final BaseAuth auth;
+  final VoidCallback logoutCallback;
+  final String userId;
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -11,9 +18,53 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Baby Name Votes')),
-      body: _buildBody(context),
+    return Stack(
+      children: <Widget>[
+        Scaffold(
+          extendBodyBehindAppBar: true,
+          // backgroundColor: Colors.transparent,
+          drawer: Drawer(
+            // Add a ListView to the drawer. This ensures the user can scroll
+            // through the options in the drawer if there isn't enough vertical
+            // space to fit everything.
+            child: ListView(
+              // Important: Remove any padding from the ListView.
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                DrawerHeader(
+                  child: Text('Drawer Header'),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                  ),
+                ),
+                ListTile(
+                  title: Text('Item 1'),
+                  onTap: () {
+                    // Update the state of the app.
+                    // ...
+                  },
+                ),
+                ListTile(
+                  title: Text('Item 2'),
+                  onTap: () {
+                    // Update the state of the app.
+                    // ...
+                  },
+                ),
+              ],
+            ),
+          ),
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+          ),
+          body: MyHeader(
+            textTop: "A latte spruned",
+            textBottom: "is a fortune earned.",
+            offset: -20,
+          ),
+        ),
+      ],
     );
   }
 }
