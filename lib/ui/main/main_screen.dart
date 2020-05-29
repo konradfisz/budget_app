@@ -1,5 +1,7 @@
-import 'package:budgetapp/main_header.dart';
-import 'package:budgetapp/services/auth.dart';
+import 'package:budgetapp/data/baby.dart';
+import 'package:budgetapp/ui/main/main_header.dart';
+import 'package:budgetapp/clients/auth_client.dart';
+import 'package:budgetapp/utils/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -46,7 +48,7 @@ class _MainScreenState extends State<MainScreen> {
                     color: Colors.blue,
                   ),
                 ),
-                ListTile(title: Text('Log out'), onTap: signOut),
+                ListTile(title: Text(Strings.logout), onTap: signOut),
                 ListTile(
                   title: Text('Item 2'),
                   onTap: () {
@@ -62,8 +64,8 @@ class _MainScreenState extends State<MainScreen> {
             elevation: 0.0,
           ),
           body: MyHeader(
-            textTop: "A latte spruned",
-            textBottom: "is a fortune earned.",
+            textTop: Strings.headerTopText,
+            textBottom: Strings.headerBottomText,
             offset: -20,
           ),
         ),
@@ -91,7 +93,7 @@ Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
 }
 
 Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-  final record = Record.fromSnapshot(data);
+  final record = Baby.fromSnapshot(data);
 
   return Padding(
     key: ValueKey(record.name),
@@ -108,22 +110,4 @@ Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
       ),
     ),
   );
-}
-
-class Record {
-  final String name;
-  final int votes;
-  final DocumentReference reference;
-
-  Record.fromMap(Map<String, dynamic> map, {this.reference})
-      : assert(map['name'] != null),
-        assert(map['votes'] != null),
-        name = map['name'],
-        votes = map['votes'];
-
-  Record.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data, reference: snapshot.reference);
-
-  @override
-  String toString() => "Record<$name:$votes>";
 }

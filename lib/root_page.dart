@@ -1,6 +1,6 @@
-import 'package:budgetapp/log_in/log_in_sign_up.dart';
-import 'package:budgetapp/main_screen.dart';
-import 'package:budgetapp/services/auth.dart';
+import 'package:budgetapp/ui/log_in/log_in_sign_up.dart';
+import 'package:budgetapp/ui/main/main_screen.dart';
+import 'package:budgetapp/clients/auth_client.dart';
 import 'package:flutter/material.dart';
 
 enum AuthStatus {

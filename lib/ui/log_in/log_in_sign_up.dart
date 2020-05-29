@@ -1,5 +1,5 @@
-import 'package:budgetapp/log_in/widget_flipper.dart';
-import 'package:budgetapp/services/auth.dart';
+import 'package:budgetapp/ui/log_in/widget_flipper.dart';
+import 'package:budgetapp/clients/auth_client.dart';
 import 'package:flutter/material.dart';
 
 class LoginSignupPage extends StatefulWidget {

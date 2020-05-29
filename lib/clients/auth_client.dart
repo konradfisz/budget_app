@@ -15,7 +15,7 @@ abstract class BaseAuth {
   Future<bool> isEmailVerified();
 }
 
-class Auth implements BaseAuth {
+class FirebaseAuthClient implements BaseAuth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   Future<String> signIn(String email, String password) async {

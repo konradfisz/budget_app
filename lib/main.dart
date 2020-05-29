@@ -1,7 +1,5 @@
-import 'package:budgetapp/log_in/log_in_sign_up.dart';
-import 'package:budgetapp/main_screen.dart';
 import 'package:budgetapp/root_page.dart';
-import 'package:budgetapp/services/auth.dart';
+import 'package:budgetapp/clients/auth_client.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -18,7 +16,7 @@ class BudgetApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: new RootPage(
-        auth: new Auth(),
+        auth: new FirebaseAuthClient(),
       ),
     );
   }
