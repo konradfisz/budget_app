@@ -28,7 +28,7 @@ class LoginSignupBloc {
   final _validateEmail =
       StreamTransformer<String, String>.fromHandlers(handleData: (email, sink) {
     if (email.contains('@')) {
-      sink.add(email);
+      sink.add(email.trim());
     } else {
       sink.addError(Strings.emailValidateMessage);
     }
@@ -37,7 +37,7 @@ class LoginSignupBloc {
   final _validatePassword = StreamTransformer<String, String>.fromHandlers(
       handleData: (password, sink) {
     if (password.length > 3) {
-      sink.add(password);
+      sink.add(password.trim());
     } else {
       sink.addError(Strings.passwordValidateMessage);
     }

@@ -1,5 +1,7 @@
+import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
 import 'package:budgetapp/ui/log_in/widget_flipper.dart';
 import 'package:budgetapp/clients/auth_client.dart';
+import 'package:budgetapp/utils/strings.dart';
 import 'package:flutter/material.dart';
 
 class LoginSignupPage extends StatefulWidget {
@@ -14,6 +16,19 @@ class LoginSignupPage extends StatefulWidget {
 
 class _LoginSignupPageState extends State<LoginSignupPage> {
   final _formKey = new GlobalKey<FormState>();
+  LoginSignupBloc _bloc;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bloc = LoginSignupBlocProvider.of(context);
+  }
+
+  @override
+  void dispose() {
+    _bloc.dispose();
+    super.dispose();
+  }
 
   String _email;
   String _password;
@@ -33,40 +48,40 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   }
 
   // Perform login or signup
-  void validateAndSubmit() async {
-    setState(() {
-      _errorMessage = "";
-      _isLoading = true;
-    });
-    if (validateAndSave()) {
-      String userId = "";
-      try {
-        if (_isLoginForm) {
-          userId = await widget.auth.signIn(_email, _password);
-          print('Signed in: $userId');
-        } else {
-          userId = await widget.auth.signUp(_email, _password);
-          //widget.auth.sendEmailVerification();
-          //_showVerifyEmailSentDialog();
-          print('Signed up user: $userId');
-        }
-        setState(() {
-          _isLoading = false;
-        });
+  // void validateAndSubmit() async {
+  //   setState(() {
+  //     _errorMessage = "";
+  //     _isLoading = true;
+  //   });
+  //   if (validateAndSave()) {
+  //     String userId = "";
+  //     try {
+  //       if (_isLoginForm) {
+  //         userId = await widget.auth.signIn(_email, _password);
+  //         print('Signed in: $userId');
+  //       } else {
+  //         userId = await widget.auth.signUp(_email, _password);
+  //         //widget.auth.sendEmailVerification();
+  //         //_showVerifyEmailSentDialog();
+  //         print('Signed up user: $userId');
+  //       }
+  //       setState(() {
+  //         _isLoading = false;
+  //       });
 
-        if (userId.length > 0 && userId != null && _isLoginForm) {
-          widget.loginCallback();
-        }
-      } catch (e) {
-        print('Error: $e');
-        setState(() {
-          _isLoading = false;
-          _errorMessage = e.message;
-          _formKey.currentState.reset();
-        });
-      }
-    }
-  }
+  //       if (userId.length > 0 && userId != null && _isLoginForm) {
+  //         widget.loginCallback();
+  //       }
+  //     } catch (e) {
+  //       print('Error: $e');
+  //       setState(() {
+  //         _isLoading = false;
+  //         _errorMessage = e.message;
+  //         _formKey.currentState.reset();
+  //       });
+  //     }
+  //   }
+  // }
 
   @override
   void initState() {
@@ -91,24 +106,19 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Welcome to My Budget app!'),
-        ),
-        body: Stack(
-          children: <Widget>[
-            _showForm(),
-            _showCircularProgress(),
-          ],
-        ));
-  }
-
-  Widget _showCircularProgress() {
-    if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
-    }
-    return Container(
-      height: 0.0,
-      width: 0.0,
+      appBar: new AppBar(
+        title: new Text(Strings.welcomeMessage),
+      ),
+      body: StreamBuilder(
+        stream: _bloc.signInStatus,
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if (!snapshot.hasData || snapshot.hasError) {
+            return _showForm();
+          } else {
+            return CircularProgressIndicator();
+          }
+        },
+      ),
     );
   }
 
@@ -144,31 +154,13 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             shrinkWrap: true,
             children: <Widget>[
               showLogo(),
-              showEmailInput(),
-              showPasswordInput(),
+              emailField(),
+              passwordField(),
               showPrimaryButton(),
               showSecondaryButton(),
-              showErrorMessage(),
             ],
           ),
         ));
-  }
-
-  Widget showErrorMessage() {
-    if (_errorMessage.length > 0 && _errorMessage != null) {
-      return new Text(
-        _errorMessage,
-        style: TextStyle(
-            fontSize: 13.0,
-            color: Colors.red,
-            height: 1.0,
-            fontWeight: FontWeight.w300),
-      );
-    } else {
-      return new Container(
-        height: 0.0,
-      );
-    }
   }
 
   Widget showLogo() {
@@ -183,43 +175,76 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
-  Widget showEmailInput() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 24.0, 0.0, 0.0),
-      child: new TextFormField(
-        maxLines: 1,
-        keyboardType: TextInputType.emailAddress,
-        autofocus: false,
-        decoration: new InputDecoration(
-            hintText: 'Email',
-            icon: new Icon(
-              Icons.mail,
-              color: Colors.grey,
-            )),
-        validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
-        onSaved: (value) => _email = value.trim(),
-      ),
+  Widget emailField() {
+    return StreamBuilder(
+        stream: _bloc.email,
+        builder: (context, snapshot) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 24.0, 0.0, 0.0),
+            child: new TextFormField(
+              maxLines: 1,
+              keyboardType: TextInputType.emailAddress,
+              autofocus: true,
+              onChanged: _bloc.changeEmail,
+              decoration: new InputDecoration(
+                hintText: Strings.emailHint,
+                icon: new Icon(
+                  Icons.mail,
+                  color: Colors.grey,
+                ),
+                errorText: snapshot.error,
+              ),
+              onSaved: (value) => _email = value.trim(),
+            ),
+          );
+        });
+  }
+
+  Widget passwordField() {
+    return StreamBuilder(
+      stream: _bloc.password,
+      builder: (context, AsyncSnapshot<String> snapshot) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(0.0, 24.0, 0.0, 0.0),
+          child: TextFormField(
+            maxLines: 1,
+            obscureText: true,
+            autofocus: false,
+            onChanged: _bloc.changePassword,
+            decoration: InputDecoration(
+              icon: new Icon(
+                Icons.lock,
+                color: Colors.grey,
+              ),
+              hintText: Strings.passwordHint,
+              errorText: snapshot.error,
+            ),
+            onSaved: (value) => _password = value.trim(),
+          ),
+        );
+      },
     );
   }
 
-  Widget showPasswordInput() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-      child: new TextFormField(
-        maxLines: 1,
-        obscureText: true,
-        autofocus: false,
-        decoration: new InputDecoration(
-            hintText: 'Password',
-            icon: new Icon(
-              Icons.lock,
-              color: Colors.grey,
-            )),
-        validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
-        onSaved: (value) => _password = value.trim(),
-      ),
-    );
-  }
+  //   Widget submitButton() {
+  //   return
+  // }
+
+  // Widget button() {
+  //   return RaisedButton(
+  //       child: Text(StringConstant.submit),
+  //       textColor: Colors.white,
+  //       color: Colors.black,
+  //       shape: RoundedRectangleBorder(
+  //           borderRadius: new BorderRadius.circular(30.0)),
+  //       onPressed: () {
+  //         if (_bloc.validateFields()) {
+  //           authenticateUser();
+  //         } else {
+  //           showErrorMessage();
+  //         }
+  //       });
+  // }
 
   Widget showSecondaryButton() {
     return new FlatButton(
@@ -241,8 +266,32 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             color: Colors.blue,
             child: new Text(_isLoginForm ? 'Login' : 'Create account',
                 style: new TextStyle(fontSize: 20.0, color: Colors.white)),
-            onPressed: validateAndSubmit,
+            onPressed: () {
+              if (_bloc.validateFields()) {
+                authenticateUser();
+              } else {
+                showErrorMessage();
+              }
+            },
           ),
         ));
+  }
+
+  void showErrorMessage() {
+    final snackbar = SnackBar(
+        content: Text(Strings.errorMessage),
+        duration: new Duration(seconds: 2));
+    Scaffold.of(context).showSnackBar(snackbar);
+  }
+
+  void authenticateUser() {
+    _bloc.showProgressBar(true);
+    if (_isLoginForm) {
+      _bloc.singIn().then((userId) => print('Signed in: $userId'));
+    } else {
+      _bloc.signUp().then((userId) => print('Signed up: $userId'));
+      //widget.auth.sendEmailVerification();
+      //_showVerifyEmailSentDialog();
+    }
   }
 }

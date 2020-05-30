@@ -18,4 +18,6 @@ class Strings {
   static const String headerTopText = "A latte spruned";
   static const String headerBottomText = "is a fortune earned.";
   static const String logout = "Log out";
+  static const String appTitle = "Budget App";
+  static const String welcomeMessage = "Welcome to My Budget app!";
 }
