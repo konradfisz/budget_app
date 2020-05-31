@@ -111,28 +111,27 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         body: _showForm());
   }
 
-//  void _showVerifyEmailSentDialog() {
-//    showDialog(
-//      context: context,
-//      builder: (BuildContext context) {
-//        // return object of type Dialog
-//        return AlertDialog(
-//          title: new Text("Verify your account"),
-//          content:
-//              new Text("Link to verify account has been sent to your email"),
-//          actions: <Widget>[
-//            new FlatButton(
-//              child: new Text("Dismiss"),
-//              onPressed: () {
-//                toggleFormMode();
-//                Navigator.of(context).pop();
-//              },
-//            ),
-//          ],
-//        );
-//      },
-//    );
-//  }
+  void _showVerifyEmailSentDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Verify your account"),
+          content:
+              new Text("Link to verify account has been sent to your email"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Dismiss"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Widget _showForm() {
     return new Container(
@@ -280,23 +279,31 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 value != null ? navigateToMain(value) : showErrorMessage(),
           );
     } else {
-      _bloc.signUp().then((userId) => print('Signed up: $userId'));
-      //widget.auth.sendEmailVerification();
-      //_showVerifyEmailSentDialog();
+      _bloc.signUp().then((userId) => _showVerifyEmailSentDialog());
+      toggleFormMode();
     }
   }
 
-  Future navigateToMain(String value) {
-    _bloc.showPhoto(true);
-    return Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LoginSignupBlocProvider(
-          child: MainScreen(
-            userId: value,
+  // Future<void> sendEmailVerification() async {
+  //   _bloc.sendEmailVerification();
+  // }
+
+  Future navigateToMain(String value) async {
+    _bloc.isEmailVerified.listen((event) async {
+      if (event) {
+        return Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginSignupBlocProvider(
+              child: MainScreen(
+                userId: value,
+              ),
+            ),
           ),
-        ),
-      ),
-    );
+        );
+      } else {
+        _showVerifyEmailSentDialog();
+      }
+    });
   }
 }

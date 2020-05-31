@@ -29,7 +29,13 @@ class FirebaseAuthClient implements BaseAuth {
     AuthResult result = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email.trim(), password: password.trim());
     FirebaseUser user = result.user;
-    return user.uid;
+    try {
+      await user.sendEmailVerification();
+      return user.uid;
+    } catch (e) {
+      print("An error occured while trying to send email        verification");
+      print(e.message);
+    }
   }
 
   Future<FirebaseUser> getCurrentUser() async {
