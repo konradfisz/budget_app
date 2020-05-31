@@ -1,3 +1,5 @@
+import 'package:budgetapp/blocs/log_in_sign_up_bloc.dart';
+import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
 import 'package:budgetapp/ui/log_in/log_in_sign_up.dart';
 import 'package:budgetapp/ui/main/main_screen.dart';
 import 'package:budgetapp/clients/auth_client.dart';
@@ -10,49 +12,55 @@ enum AuthStatus {
 }
 
 class RootPage extends StatefulWidget {
-  RootPage({this.auth});
-
-  final BaseAuth auth;
+  RootPage();
 
   @override
   State<StatefulWidget> createState() => new _RootPageState();
 }
 
 class _RootPageState extends State<RootPage> {
-  AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
+  // AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
   String _userId = "";
 
+  LoginSignupBloc _bloc;
+
   @override
-  void initState() {
-    super.initState();
-    widget.auth.getCurrentUser().then((user) {
-      setState(() {
-        if (user != null) {
-          _userId = user?.uid;
-        }
-        authStatus =
-            user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
-      });
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bloc = LoginSignupBlocProvider.of(context);
   }
 
-  void loginCallback() {
-    widget.auth.getCurrentUser().then((user) {
-      setState(() {
-        _userId = user.uid.toString();
-      });
-    });
-    setState(() {
-      authStatus = AuthStatus.LOGGED_IN;
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   widget.auth.getCurrentUser().then((user) {
+  //     setState(() {
+  //       if (user != null) {
+  //         _userId = user?.uid;
+  //       }
+  //       authStatus =
+  //           user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
+  //     });
+  //   });
+  // }
 
-  void logoutCallback() {
-    setState(() {
-      authStatus = AuthStatus.NOT_LOGGED_IN;
-      _userId = "";
-    });
-  }
+  // void loginCallback() {
+  //   widget.auth.getCurrentUser().then((user) {
+  //     setState(() {
+  //       _userId = user.uid.toString();
+  //     });
+  //   });
+  //   setState(() {
+  //     authStatus = AuthStatus.LOGGED_IN;
+  //   });
+  // }
+
+  // void logoutCallback() {
+  //   setState(() {
+  //     authStatus = AuthStatus.NOT_LOGGED_IN;
+  //     _userId = "";
+  //   });
+  // }
 
   Widget buildWaitingScreen() {
     return Scaffold(
@@ -65,28 +73,50 @@ class _RootPageState extends State<RootPage> {
 
   @override
   Widget build(BuildContext context) {
-    switch (authStatus) {
-      case AuthStatus.NOT_DETERMINED:
-        return buildWaitingScreen();
-        break;
-      case AuthStatus.NOT_LOGGED_IN:
-        return new LoginSignupPage(
-          auth: widget.auth,
-          loginCallback: loginCallback,
-        );
-        break;
-      case AuthStatus.LOGGED_IN:
-        if (_userId.length > 0 && _userId != null) {
-          return new MainScreen(
-            userId: _userId,
-            auth: widget.auth,
-            logoutCallback: logoutCallback,
-          );
+    return StreamBuilder(
+      stream: _bloc.isSignedIn,
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (snapshot.hasData && !snapshot.hasError) {
+          if (snapshot.data) {
+            _bloc.getCurrentUserId().then((value) => _userId = value);
+            return LoginSignupBlocProvider(
+              child: new MainScreen(
+                userId: _userId,
+              ),
+            );
+          } else {
+            return LoginSignupBlocProvider(
+              child: LoginSignupPage(),
+            );
+          }
         } else
           return buildWaitingScreen();
-        break;
-      default:
-        return buildWaitingScreen();
-    }
+      },
+    );
   }
+
+  // switch (authStatus) {
+  //   case AuthStatus.NOT_DETERMINED:
+  //     return buildWaitingScreen();
+  //     break;
+  //   case AuthStatus.NOT_LOGGED_IN:
+  //     return new LoginSignupPage(
+  //       auth: widget.auth,
+  //       loginCallback: loginCallback,
+  //     );
+  //     break;
+  //   case AuthStatus.LOGGED_IN:
+  //     if (_userId.length > 0 && _userId != null) {
+  //       return new MainScreen(
+  //         userId: _userId,
+  //         auth: widget.auth,
+  //         logoutCallback: logoutCallback,
+  //       );
+  //     } else
+  //       return buildWaitingScreen();
+  //     break;
+  //   default:
+  //     return buildWaitingScreen();
+  // }
+
 }

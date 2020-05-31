@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:budgetapp/repository.dart';
 import 'package:budgetapp/utils/strings.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
 
 class LoginSignupBloc {
@@ -9,21 +10,28 @@ class LoginSignupBloc {
   final _email = BehaviorSubject<String>();
   final _password = BehaviorSubject<String>();
   final _isSignedIn = BehaviorSubject<bool>();
+  final _shouldShowPhoto = BehaviorSubject<bool>.seeded(false);
+  final _userId = BehaviorSubject<String>();
 
   Stream<String> get email => _email.stream.transform(_validateEmail);
 
   Stream<String> get password => _password.stream.transform(_validatePassword);
 
-  Stream<bool> get signInStatus => _isSignedIn.stream;
+  Stream<bool> get isSignedIn =>
+      getCurrentUserId().asStream().transform(_isSigned);
+
+  Stream<bool> get shouldShowPhoto => _shouldShowPhoto.stream;
 
   String get emailAddress => _email.value;
+
+  String get userId => _userId.value;
 
   // Change data
   Function(String) get changeEmail => _email.sink.add;
 
   Function(String) get changePassword => _password.sink.add;
 
-  Function(bool) get showProgressBar => _isSignedIn.sink.add;
+  Function(bool) get showPhoto => _shouldShowPhoto.sink.add;
 
   final _validateEmail =
       StreamTransformer<String, String>.fromHandlers(handleData: (email, sink) {
@@ -43,12 +51,39 @@ class LoginSignupBloc {
     }
   });
 
-  Future<String> singIn() {
+  final _isSigned =
+      StreamTransformer<String, bool>.fromHandlers(handleData: (userId, sink) {
+    (userId != null) ? sink.add(true) : sink.add(false);
+  });
+
+  Future<String> signIn() {
     return _repository.signIn(_email.value, _password.value);
   }
 
   Future<String> signUp() {
     return _repository.signUp(_email.value, _password.value);
+  }
+
+  Future<String> getCurrentUserId() {
+    return _repository
+        .getCurrentUser()
+        .then((value) => value != null ? value.uid : null);
+  }
+
+  Future<String> sendEmailVerification() {
+    return _repository.sendEmailVerification();
+  }
+
+  // Future<void> isSignedIn() {
+  //   return getCurrentUserId().then((userId) => {
+  //         (userId != null)
+  //             ? _isSignedIn.sink.add(true)
+  //             : _isSignedIn.sink.add(false)
+  //       });
+  // }
+
+  Future<void> signOut() {
+    return _repository.signOut().then((_) => _isSignedIn.sink.add(false));
   }
 
   void dispose() async {

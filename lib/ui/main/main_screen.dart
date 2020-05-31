@@ -1,16 +1,15 @@
+import 'package:budgetapp/blocs/log_in_sign_up_bloc.dart';
+import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
 import 'package:budgetapp/data/baby.dart';
+import 'package:budgetapp/ui/log_in/log_in_sign_up.dart';
 import 'package:budgetapp/ui/main/main_header.dart';
-import 'package:budgetapp/clients/auth_client.dart';
 import 'package:budgetapp/utils/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainScreen extends StatefulWidget {
-  MainScreen({Key key, this.auth, this.userId, this.logoutCallback})
-      : super(key: key);
+  MainScreen({this.userId});
 
-  final BaseAuth auth;
-  final VoidCallback logoutCallback;
   final String userId;
 
   @override
@@ -20,11 +19,32 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   signOut() async {
     try {
-      await widget.auth.signOut();
-      widget.logoutCallback();
+      _bloc.signOut().then((_) => {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    LoginSignupBlocProvider(child: LoginSignupPage()),
+              ),
+            )
+          });
     } catch (e) {
       print(e);
     }
+  }
+
+  LoginSignupBloc _bloc;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bloc = LoginSignupBlocProvider.of(context);
+  }
+
+  @override
+  void dispose() {
+    _bloc.dispose();
+    super.dispose();
   }
 
   @override

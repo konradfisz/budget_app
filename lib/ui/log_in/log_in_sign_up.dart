@@ -1,14 +1,13 @@
 import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
+import 'package:budgetapp/root_page.dart';
 import 'package:budgetapp/ui/log_in/widget_flipper.dart';
 import 'package:budgetapp/clients/auth_client.dart';
+import 'package:budgetapp/ui/main/main_screen.dart';
 import 'package:budgetapp/utils/strings.dart';
 import 'package:flutter/material.dart';
 
 class LoginSignupPage extends StatefulWidget {
-  LoginSignupPage({this.auth, this.loginCallback});
-
-  final BaseAuth auth;
-  final VoidCallback loginCallback;
+  LoginSignupPage();
 
   @override
   State<StatefulWidget> createState() => new _LoginSignupPageState();
@@ -106,20 +105,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(Strings.welcomeMessage),
-      ),
-      body: StreamBuilder(
-        stream: _bloc.signInStatus,
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          if (!snapshot.hasData || snapshot.hasError) {
-            return _showForm();
-          } else {
-            return CircularProgressIndicator();
-          }
-        },
-      ),
-    );
+        appBar: new AppBar(
+          title: new Text(Strings.welcomeMessage),
+        ),
+        body: _showForm());
   }
 
 //  void _showVerifyEmailSentDialog() {
@@ -285,13 +274,29 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   }
 
   void authenticateUser() {
-    _bloc.showProgressBar(true);
     if (_isLoginForm) {
-      _bloc.singIn().then((userId) => print('Signed in: $userId'));
+      _bloc.signIn().then(
+            (value) =>
+                value != null ? navigateToMain(value) : showErrorMessage(),
+          );
     } else {
       _bloc.signUp().then((userId) => print('Signed up: $userId'));
       //widget.auth.sendEmailVerification();
       //_showVerifyEmailSentDialog();
     }
+  }
+
+  Future navigateToMain(String value) {
+    _bloc.showPhoto(true);
+    return Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginSignupBlocProvider(
+          child: MainScreen(
+            userId: value,
+          ),
+        ),
+      ),
+    );
   }
 }

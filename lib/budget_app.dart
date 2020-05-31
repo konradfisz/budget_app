@@ -15,9 +15,7 @@ class BudgetApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: LoginSignupBlocProvider(
-        child: new RootPage(
-          auth: new FirebaseAuthClient(),
-        ),
+        child: new RootPage(),
       ),
     );
   }
