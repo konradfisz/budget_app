@@ -1,7 +1,7 @@
 import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
-import 'package:budgetapp/root_page.dart';
+import 'package:budgetapp/clients/auth_helpers/auth-exception-handler.dart';
+import 'package:budgetapp/clients/auth_helpers/auth-result-status.dart';
 import 'package:budgetapp/ui/log_in/widget_flipper.dart';
-import 'package:budgetapp/clients/auth_client.dart';
 import 'package:budgetapp/ui/main/main_screen.dart';
 import 'package:budgetapp/utils/strings.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +15,7 @@ class LoginSignupPage extends StatefulWidget {
 
 class _LoginSignupPageState extends State<LoginSignupPage> {
   final _formKey = new GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   LoginSignupBloc _bloc;
 
   @override
@@ -28,10 +29,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     _bloc.dispose();
     super.dispose();
   }
-
-  String _email;
-  String _password;
-  String _errorMessage;
 
   bool _isLoginForm;
   bool _isLoading;
@@ -84,7 +81,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   @override
   void initState() {
-    _errorMessage = "";
     _isLoading = false;
     _isLoginForm = true;
     super.initState();
@@ -92,7 +88,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   void resetForm() {
     _formKey.currentState.reset();
-    _errorMessage = "";
   }
 
   void toggleFormMode() {
@@ -105,6 +100,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+        key: _scaffoldKey,
         appBar: new AppBar(
           title: new Text(Strings.welcomeMessage),
         ),
@@ -112,6 +108,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   }
 
   void _showVerifyEmailSentDialog() {
+    if (!_isLoginForm) {
+      toggleFormMode();
+    }
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -121,6 +120,13 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           content:
               new Text("Link to verify account has been sent to your email"),
           actions: <Widget>[
+            new FlatButton(
+              child: new Text("Send again"),
+              onPressed: () {
+                _bloc.sendEmailVerification();
+                Navigator.of(context).pop();
+              },
+            ),
             new FlatButton(
               child: new Text("Dismiss"),
               onPressed: () {
@@ -182,7 +188,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 ),
                 errorText: snapshot.error,
               ),
-              onSaved: (value) => _email = value.trim(),
             ),
           );
         });
@@ -207,7 +212,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               hintText: Strings.passwordHint,
               errorText: snapshot.error,
             ),
-            onSaved: (value) => _password = value.trim(),
           ),
         );
       },
@@ -258,46 +262,52 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               if (_bloc.validateFields()) {
                 authenticateUser();
               } else {
-                showErrorMessage();
+                showErrorMessage(Strings.errorMessage);
               }
             },
           ),
         ));
   }
 
-  void showErrorMessage() {
+  void showErrorMessage(String message) {
     final snackbar = SnackBar(
-        content: Text(Strings.errorMessage),
-        duration: new Duration(seconds: 2));
-    Scaffold.of(context).showSnackBar(snackbar);
+      content: Text(message),
+      action: SnackBarAction(
+        label: 'Enter again',
+        onPressed: () {
+          resetForm();
+        },
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackbar);
   }
 
   void authenticateUser() {
     if (_isLoginForm) {
       _bloc.signIn().then(
-            (value) =>
-                value != null ? navigateToMain(value) : showErrorMessage(),
+            (status) => status == AuthResultStatus.successful
+                ? navigateToMain()
+                : showErrorMessage(
+                    AuthExceptionHandler.generateExceptionMessage(status)),
           );
     } else {
-      _bloc.signUp().then((userId) => _showVerifyEmailSentDialog());
-      toggleFormMode();
+      _bloc.signUp().then(
+            (status) => status == AuthResultStatus.successful
+                ? _showVerifyEmailSentDialog()
+                : showErrorMessage(
+                    AuthExceptionHandler.generateExceptionMessage(status)),
+          );
     }
   }
 
-  // Future<void> sendEmailVerification() async {
-  //   _bloc.sendEmailVerification();
-  // }
-
-  Future navigateToMain(String value) async {
+  Future navigateToMain() async {
     _bloc.isEmailVerified.listen((event) async {
       if (event) {
         return Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => LoginSignupBlocProvider(
-              child: MainScreen(
-                userId: value,
-              ),
+              child: MainScreen(),
             ),
           ),
         );

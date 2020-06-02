@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:budgetapp/clients/auth_helpers/auth-exception-handler.dart';
+import 'package:budgetapp/clients/auth_helpers/auth-result-status.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class BaseAuth {
-  Future<String> signIn(String email, String password);
+  Future<AuthResultStatus> signIn(String email, String password);
 
-  Future<String> signUp(String email, String password);
+  Future<AuthResultStatus> signUp(String email, String password);
 
   Future<FirebaseUser> getCurrentUser();
 
@@ -17,25 +19,46 @@ abstract class BaseAuth {
 
 class FirebaseAuthClient implements BaseAuth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  AuthResultStatus _status;
 
-  Future<String> signIn(String email, String password) async {
-    AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email.trim(), password: password.trim());
-    FirebaseUser user = result.user;
-    return user.uid;
+  Future<AuthResultStatus> signIn(String email, String password) async {
+    try {
+      AuthResult authResult = await _firebaseAuth.signInWithEmailAndPassword(
+          email: email.trim(), password: password.trim());
+      if (authResult.user != null) {
+        _status = AuthResultStatus.successful;
+      } else {
+        _status = AuthResultStatus.undefined;
+      }
+    } catch (e) {
+      print('Exception @createAccount: $e');
+      _status = AuthExceptionHandler.handleException(e);
+    }
+    return _status;
   }
 
-  Future<String> signUp(String email, String password) async {
-    AuthResult result = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email.trim(), password: password.trim());
-    FirebaseUser user = result.user;
+  Future<AuthResultStatus> signUp(String email, String password) async {
     try {
-      await user.sendEmailVerification();
-      return user.uid;
+      final authResult = await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email.trim(), password: password.trim());
+      if (authResult.user != null) {
+        FirebaseUser user = authResult.user;
+        try {
+          await user.sendEmailVerification();
+        } catch (e) {
+          print(
+              "An error occured while trying to send email        verification");
+          print(e.message);
+        }
+        _status = AuthResultStatus.successful;
+      } else {
+        _status = AuthResultStatus.undefined;
+      }
     } catch (e) {
-      print("An error occured while trying to send email        verification");
-      print(e.message);
+      print('Exception @createAccount: $e');
+      _status = AuthExceptionHandler.handleException(e);
     }
+    return _status;
   }
 
   Future<FirebaseUser> getCurrentUser() async {

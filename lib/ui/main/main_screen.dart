@@ -8,9 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainScreen extends StatefulWidget {
-  MainScreen({this.userId});
-
-  final String userId;
+  MainScreen();
 
   @override
   _MainScreenState createState() => _MainScreenState();

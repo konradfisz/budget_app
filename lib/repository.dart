@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:budgetapp/clients/auth_client.dart';
+import 'package:budgetapp/clients/auth_helpers/auth-result-status.dart';
 import 'package:budgetapp/clients/firestore_client.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,10 +10,10 @@ class Repository {
   final _firebaseAuthClient = FirebaseAuthClient();
   final _firestoreClient = FirestoreClient();
 
-  Future<String> signIn(String email, String password) =>
+  Future<AuthResultStatus> signIn(String email, String password) =>
       _firebaseAuthClient.signIn(email, password);
 
-  Future<String> signUp(String email, String password) =>
+  Future<AuthResultStatus> signUp(String email, String password) =>
       _firebaseAuthClient.signUp(email, password);
 
   Future<FirebaseUser> getCurrentUser() => _firebaseAuthClient.getCurrentUser();

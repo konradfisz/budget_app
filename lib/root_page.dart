@@ -78,11 +78,9 @@ class _RootPageState extends State<RootPage> {
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.hasData && !snapshot.hasError) {
           if (snapshot.data) {
-            _bloc.getCurrentUserId().then((value) => _userId = value);
+            // _bloc.getCurrentUserId().then((value) => _userId = value);
             return LoginSignupBlocProvider(
-              child: new MainScreen(
-                userId: _userId,
-              ),
+              child: new MainScreen(),
             );
           } else {
             return LoginSignupBlocProvider(

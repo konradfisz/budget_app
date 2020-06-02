@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:budgetapp/clients/auth_helpers/auth-result-status.dart';
 import 'package:budgetapp/repository.dart';
 import 'package:budgetapp/utils/strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -66,11 +67,11 @@ class LoginSignupBloc {
   //   (isVerified) ? sink.add(true) : sink.add(false);
   // });
 
-  Future<String> signIn() {
+  Future<AuthResultStatus> signIn() {
     return _repository.signIn(_email.value, _password.value);
   }
 
-  Future<String> signUp() {
+  Future<AuthResultStatus> signUp() {
     return _repository.signUp(_email.value, _password.value);
   }
 
@@ -94,6 +95,10 @@ class LoginSignupBloc {
 
   Future<void> signOut() {
     return _repository.signOut().then((_) => _isSignedIn.sink.add(false));
+  }
+
+  Future<void> sendEmailVerification() async {
+    _repository.sendEmailVerification();
   }
 
   void dispose() async {
