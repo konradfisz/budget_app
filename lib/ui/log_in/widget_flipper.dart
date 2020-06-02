@@ -1,43 +1,6 @@
+import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' show pi;
-
-class LogInScreen extends StatefulWidget {
-  LogInScreen({Key key}) : super(key: key);
-
-  @override
-  _LogInScreenState createState() => _LogInScreenState();
-}
-
-class _LogInScreenState extends State<LogInScreen>
-    with SingleTickerProviderStateMixin {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Welcome to My Budget App!"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Container(
-              width: 200,
-              height: 200,
-              child: WidgetFlipper(
-                frontWidget:
-                    CircleAvatar(child: Image.asset("assets/google_logo.png")),
-                backWidget: CircleAvatar(),
-              ),
-            ),
-            SizedBox(height: 20),
-            SignInButton(),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class WidgetFlipper extends StatefulWidget {
   WidgetFlipper({
@@ -59,6 +22,13 @@ class _WidgetFlipperState extends State<WidgetFlipper>
   Animation<double> _frontRotation;
   Animation<double> _backRotation;
   bool isFrontVisible = true;
+  LoginSignupBloc _bloc;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bloc = LoginSignupBlocProvider.of(context);
+  }
 
   @override
   void initState() {
@@ -114,50 +84,49 @@ class _WidgetFlipperState extends State<WidgetFlipper>
           animation: _frontRotation,
           child: widget.frontWidget,
         ),
-        _tapDetectionControls(),
       ],
     );
   }
 
-  Widget _tapDetectionControls() {
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        GestureDetector(
-          onTap: _leftRotation,
-          child: FractionallySizedBox(
-            widthFactor: 0.5,
-            heightFactor: 1.0,
-            alignment: Alignment.topLeft,
-            child: Container(
-              color: Colors.transparent,
-            ),
-          ),
-        ),
-        GestureDetector(
-          onTap: _rightRotation,
-          child: FractionallySizedBox(
-            widthFactor: 0.5,
-            heightFactor: 1.0,
-            alignment: Alignment.topRight,
-            child: Container(
-              color: Colors.transparent,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _tapDetectionControls() {
+  //   return Stack(
+  //     fit: StackFit.expand,
+  //     children: <Widget>[
+  //       GestureDetector(
+  //         onTap: _leftRotation,
+  //         child: FractionallySizedBox(
+  //           widthFactor: 0.5,
+  //           heightFactor: 1.0,
+  //           alignment: Alignment.topLeft,
+  //           child: Container(
+  //             color: Colors.transparent,
+  //           ),
+  //         ),
+  //       ),
+  //       GestureDetector(
+  //         onTap: _rightRotation,
+  //         child: FractionallySizedBox(
+  //           widthFactor: 0.5,
+  //           heightFactor: 1.0,
+  //           alignment: Alignment.topRight,
+  //           child: Container(
+  //             color: Colors.transparent,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  void _leftRotation() {
-    _toggleSide();
-  }
+  // void _leftRotation() {
+  //   _toggleSide();
+  // }
 
-  void _rightRotation() {
-    _toggleSide();
-  }
+  // void _rightRotation() {
+  //   _toggleSide();
+  // }
 
-  void _toggleSide() {
+  void toggleSide() {
     if (isFrontVisible) {
       controller.forward();
       isFrontVisible = false;

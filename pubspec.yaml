@@ -28,6 +28,9 @@ flutter_icons:
   adaptive_icon_foreground: "assets/launcher/foreground.png"
 
 dependencies:
+  cloud_firestore: ^0.13.6
+  firebase_auth: ^0.16.1
+  rxdart: ^0.24.1
   flutter_launcher_icons: "^0.7.0"
   flutter:
     sdk: flutter
