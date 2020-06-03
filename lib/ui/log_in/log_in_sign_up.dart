@@ -120,13 +120,13 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           content:
               new Text("Link to verify account has been sent to your email"),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text("Send again"),
-              onPressed: () {
-                _bloc.sendEmailVerification();
-                Navigator.of(context).pop();
-              },
-            ),
+            // new FlatButton(
+            //   child: new Text("Send again"),
+            //   onPressed: () {
+            //     _bloc.sendEmailVerification();
+            //     Navigator.of(context).pop();
+            //   },
+            // ),
             new FlatButton(
               child: new Text("Dismiss"),
               onPressed: () {
@@ -313,7 +313,17 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         );
       } else {
         _showVerifyEmailSentDialog();
+        signOut();
       }
     });
+  }
+
+  signOut() async {
+    try {
+      _bloc.signOut();
+      resetForm();
+    } catch (e) {
+      print(e);
+    }
   }
 }

@@ -11,7 +11,7 @@ class LoginSignupBloc {
   final _email = BehaviorSubject<String>();
   final _password = BehaviorSubject<String>();
   final _isSignedIn = BehaviorSubject<bool>();
-  // final _isEmailVerified = BehaviorSubject<bool>();
+  final _isEmailVerified = BehaviorSubject<bool>.seeded(false);
   final _shouldShowPhoto = BehaviorSubject<bool>.seeded(false);
   final _userId = BehaviorSubject<String>();
 
@@ -24,7 +24,8 @@ class LoginSignupBloc {
 
   Stream<bool> get shouldShowPhoto => _shouldShowPhoto.stream;
 
-  Stream<bool> get isEmailVerified => isEmailVerifiedFuture().asStream();
+  Stream<bool> get isEmailVerified =>
+      isEmailVerifiedFuture().asStream().transform(_isVerified);
 
   String get emailAddress => _email.value;
 
@@ -62,10 +63,10 @@ class LoginSignupBloc {
     (userId != null) ? sink.add(true) : sink.add(false);
   });
 
-  // final _isVerified = StreamTransformer<bool, bool>.fromHandlers(
-  //     handleData: (isVerified, sink) {
-  //   (isVerified) ? sink.add(true) : sink.add(false);
-  // });
+  final _isVerified = StreamTransformer<bool, bool>.fromHandlers(
+      handleData: (isVerified, sink) {
+    (isVerified) ? sink.add(true) : sink.add(false);
+  });
 
   Future<AuthResultStatus> signIn() {
     return _repository.signIn(_email.value, _password.value);

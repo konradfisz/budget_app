@@ -33,6 +33,47 @@ class _MainScreenState extends State<MainScreen> {
 
   LoginSignupBloc _bloc;
 
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   _bloc.isEmailVerified.listen((event) async {
+  //     if (!event) {
+  //       _showVerifyEmailSentDialog();
+  //     }
+  //   });
+  // }
+
+  // void _showVerifyEmailSentDialog() {
+  //   showDialog(
+  //     barrierDismissible: false,
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       // return object of type Dialog
+  //       return AlertDialog(
+  //         title: new Text("Verify your account"),
+  //         content:
+  //             new Text("Link to verify account has been sent to your email"),
+  //         actions: <Widget>[
+  //           new FlatButton(
+  //             child: new Text("Send again"),
+  //             onPressed: () {
+  //               _bloc.sendEmailVerification();
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //           new FlatButton(
+  //             child: new Text("Dismiss"),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
