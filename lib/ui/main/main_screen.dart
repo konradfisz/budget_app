@@ -4,6 +4,7 @@ import 'package:budgetapp/data/baby.dart';
 import 'package:budgetapp/ui/log_in/log_in_sign_up.dart';
 import 'package:budgetapp/ui/main/main_header.dart';
 import 'package:budgetapp/utils/strings.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -15,6 +16,9 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  FirebaseUser _user;
+  LoginSignupBloc _bloc;
+
   signOut() async {
     try {
       _bloc.signOut().then((_) => {
@@ -31,12 +35,46 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  LoginSignupBloc _bloc;
+  void _showVerifyEmailSentDialog(FirebaseUser user) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Verify your account"),
+          content:
+              new Text("Link to verify account has been sent to your email"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Send again"),
+              onPressed: () {
+                user.sendEmailVerification();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Log again"),
+              onPressed: () {
+                signOut();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _bloc = LoginSignupBlocProvider.of(context);
+    _bloc.getCurrentUser().then((value) => _user = value);
+    _bloc.isEmailVerified.listen((event) async {
+      if (!event) {
+        _showVerifyEmailSentDialog(_user);
+      }
+    });
   }
 
   @override
