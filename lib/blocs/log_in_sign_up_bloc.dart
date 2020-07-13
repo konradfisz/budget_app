@@ -11,7 +11,6 @@ class LoginSignupBloc {
   final _email = BehaviorSubject<String>();
   final _password = BehaviorSubject<String>();
   final _isSignedIn = BehaviorSubject<bool>();
-  final _isEmailVerified = BehaviorSubject<bool>.seeded(false);
   final _shouldShowPhoto = BehaviorSubject<bool>.seeded(false);
   final _userId = BehaviorSubject<String>();
 
@@ -28,8 +27,6 @@ class LoginSignupBloc {
       isEmailVerifiedFuture().asStream().transform(_isVerified);
 
   String get emailAddress => _email.value;
-
-  // bool get isEmail => _isEmailVerified.value;
 
   String get userId => _userId.value;
 
@@ -82,17 +79,13 @@ class LoginSignupBloc {
         .then((value) => value != null ? value.uid : null);
   }
 
+  Future<FirebaseUser> getCurrentUser() {
+    return _repository.getCurrentUser();
+  }
+
   Future<bool> isEmailVerifiedFuture() {
     return _repository.isEmailVerified();
   }
-
-  // Future<void> isSignedIn() {
-  //   return getCurrentUserId().then((userId) => {
-  //         (userId != null)
-  //             ? _isSignedIn.sink.add(true)
-  //             : _isSignedIn.sink.add(false)
-  //       });
-  // }
 
   Future<void> signOut() {
     return _repository.signOut().then((_) => _isSignedIn.sink.add(false));

@@ -43,42 +43,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     return false;
   }
 
-  // Perform login or signup
-  // void validateAndSubmit() async {
-  //   setState(() {
-  //     _errorMessage = "";
-  //     _isLoading = true;
-  //   });
-  //   if (validateAndSave()) {
-  //     String userId = "";
-  //     try {
-  //       if (_isLoginForm) {
-  //         userId = await widget.auth.signIn(_email, _password);
-  //         print('Signed in: $userId');
-  //       } else {
-  //         userId = await widget.auth.signUp(_email, _password);
-  //         //widget.auth.sendEmailVerification();
-  //         //_showVerifyEmailSentDialog();
-  //         print('Signed up user: $userId');
-  //       }
-  //       setState(() {
-  //         _isLoading = false;
-  //       });
-
-  //       if (userId.length > 0 && userId != null && _isLoginForm) {
-  //         widget.loginCallback();
-  //       }
-  //     } catch (e) {
-  //       print('Error: $e');
-  //       setState(() {
-  //         _isLoading = false;
-  //         _errorMessage = e.message;
-  //         _formKey.currentState.reset();
-  //       });
-  //     }
-  //   }
-  // }
-
   @override
   void initState() {
     _isLoading = false;
@@ -120,13 +84,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           content:
               new Text("Link to verify account has been sent to your email"),
           actions: <Widget>[
-            // new FlatButton(
-            //   child: new Text("Send again"),
-            //   onPressed: () {
-            //     _bloc.sendEmailVerification();
-            //     Navigator.of(context).pop();
-            //   },
-            // ),
             new FlatButton(
               child: new Text("Dismiss"),
               onPressed: () {
@@ -218,26 +175,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
-  //   Widget submitButton() {
-  //   return
-  // }
-
-  // Widget button() {
-  //   return RaisedButton(
-  //       child: Text(StringConstant.submit),
-  //       textColor: Colors.white,
-  //       color: Colors.black,
-  //       shape: RoundedRectangleBorder(
-  //           borderRadius: new BorderRadius.circular(30.0)),
-  //       onPressed: () {
-  //         if (_bloc.validateFields()) {
-  //           authenticateUser();
-  //         } else {
-  //           showErrorMessage();
-  //         }
-  //       });
-  // }
-
   Widget showSecondaryButton() {
     return new FlatButton(
         child: new Text(
@@ -286,7 +223,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     if (_isLoginForm) {
       _bloc.signIn().then(
             (status) => status == AuthResultStatus.successful
-                ? navigateToMain()
+                ? Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginSignupBlocProvider(
+                        child: MainScreen(),
+                      ),
+                    ),
+                  )
                 : showErrorMessage(
                     AuthExceptionHandler.generateExceptionMessage(status)),
           );
