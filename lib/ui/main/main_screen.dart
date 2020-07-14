@@ -119,10 +119,15 @@ class _MainScreenState extends State<MainScreen> {
             backgroundColor: Colors.transparent,
             elevation: 0.0,
           ),
-          body: MyHeader(
-            textTop: Strings.headerTopText,
-            textBottom: Strings.headerBottomText,
-            offset: -20,
+          body: Column(
+            children: <Widget>[
+              MyHeader(
+                textTop: Strings.headerTopText,
+                textBottom: Strings.headerBottomText,
+                offset: -20,
+              ),
+              _buildBody(context),
+            ],
           ),
         ),
       ],
@@ -142,9 +147,11 @@ Widget _buildBody(BuildContext context) {
 }
 
 Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
-  return ListView(
-    padding: const EdgeInsets.only(top: 20.0),
-    children: snapshot.map((data) => _buildListItem(context, data)).toList(),
+  return Expanded(
+    child: ListView(
+      padding: const EdgeInsets.only(top: 20.0),
+      children: snapshot.map((data) => _buildListItem(context, data)).toList(),
+    ),
   );
 }
 
