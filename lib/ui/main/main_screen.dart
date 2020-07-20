@@ -1,3 +1,5 @@
+import 'package:budgetapp/blocs/babies_bloc.dart';
+import 'package:budgetapp/blocs/babies_bloc_provider.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
 import 'package:budgetapp/data/baby.dart';
@@ -17,11 +19,12 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   FirebaseUser _user;
-  LoginSignupBloc _bloc;
+  LoginSignupBloc _loginSignUpBloc;
+  BabiesBloc _babiesBloc;
 
   signOut() async {
     try {
-      _bloc.signOut().then((_) => {
+      _loginSignUpBloc.signOut().then((_) => {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -68,9 +71,10 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _bloc = LoginSignupBlocProvider.of(context);
-    _bloc.getCurrentUser().then((value) => _user = value);
-    _bloc.isEmailVerified.listen((event) async {
+    _babiesBloc = BabiesBlocProvider.of(context);
+    _loginSignUpBloc = LoginSignupBlocProvider.of(context);
+    _loginSignUpBloc.getCurrentUser().then((value) => _user = value);
+    _loginSignUpBloc.isEmailVerified.listen((event) async {
       if (!event) {
         _showVerifyEmailSentDialog(_user);
       }
@@ -79,7 +83,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void dispose() {
-    _bloc.dispose();
+    _loginSignUpBloc.dispose();
+    _babiesBloc.dispose();
     super.dispose();
   }
 
@@ -126,7 +131,7 @@ class _MainScreenState extends State<MainScreen> {
                 textBottom: Strings.headerBottomText,
                 offset: -20,
               ),
-              _buildBody(context),
+              _buildBody(context, _babiesBloc),
             ],
           ),
         ),
@@ -135,9 +140,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-Widget _buildBody(BuildContext context) {
+Widget _buildBody(BuildContext context, BabiesBloc babiesBloc) {
   return StreamBuilder<QuerySnapshot>(
-    stream: Firestore.instance.collection('baby').snapshots(),
+    stream: babiesBloc.myBabies(),
     builder: (context, snapshot) {
       if (!snapshot.hasData) return LinearProgressIndicator();
 

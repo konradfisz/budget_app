@@ -1,3 +1,4 @@
+import 'package:budgetapp/blocs/babies_bloc_provider.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
 import 'package:budgetapp/clients/auth_helpers/auth-exception-handler.dart';
 import 'package:budgetapp/clients/auth_helpers/auth-result-status.dart';
@@ -227,7 +228,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => LoginSignupBlocProvider(
-                        child: MainScreen(),
+                        child: BabiesBlocProvider(child: MainScreen()),
                       ),
                     ),
                   )
@@ -251,7 +252,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           context,
           MaterialPageRoute(
             builder: (context) => LoginSignupBlocProvider(
-              child: MainScreen(),
+              child: BabiesBlocProvider(child: MainScreen()),
             ),
           ),
         );

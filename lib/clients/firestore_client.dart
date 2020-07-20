@@ -6,6 +6,6 @@ class FirestoreClient {
   Firestore _firestore = Firestore.instance;
 
   Stream<QuerySnapshot> myBabies() {
-    return _firestore.collection("babies").snapshots();
+    return _firestore.collection("baby").snapshots();
   }
 }
