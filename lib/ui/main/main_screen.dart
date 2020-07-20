@@ -3,6 +3,7 @@ import 'package:budgetapp/blocs/babies_bloc_provider.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
 import 'package:budgetapp/data/baby.dart';
+import 'package:budgetapp/data/result.dart';
 import 'package:budgetapp/ui/log_in/log_in_sign_up.dart';
 import 'package:budgetapp/ui/main/main_header.dart';
 import 'package:budgetapp/utils/strings.dart';
@@ -132,6 +133,18 @@ class _MainScreenState extends State<MainScreen> {
                 offset: -20,
               ),
               _buildBody(context, _babiesBloc),
+              FlatButton(
+                onPressed: () {
+                  _babiesBloc.addUser(_user.uid);
+                },
+                child: Text("Dodaj uzytkownika"),
+              ),
+              FlatButton(
+                onPressed: () {
+                  _babiesBloc.addResult(_user.uid);
+                },
+                child: Text("Dodaj wynik"),
+              ),
             ],
           ),
         ),
@@ -142,7 +155,7 @@ class _MainScreenState extends State<MainScreen> {
 
 Widget _buildBody(BuildContext context, BabiesBloc babiesBloc) {
   return StreamBuilder<QuerySnapshot>(
-    stream: babiesBloc.myBabies(),
+    stream: babiesBloc.userResults("qoxKIvoKGfqy0oso9Xci"),
     builder: (context, snapshot) {
       if (!snapshot.hasData) return LinearProgressIndicator();
 
@@ -161,10 +174,10 @@ Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
 }
 
 Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-  final record = Baby.fromSnapshot(data);
+  final record = Result.fromSnapshot(data);
 
   return Padding(
-    key: ValueKey(record.name),
+    key: ValueKey(record.id),
     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
     child: Container(
       decoration: BoxDecoration(
@@ -172,8 +185,8 @@ Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
         borderRadius: BorderRadius.circular(5.0),
       ),
       child: ListTile(
-        title: Text(record.name),
-        trailing: Text(record.votes.toString()),
+        title: Text(record.id.toString()),
+        trailing: Text(record.score.toString()),
         onTap: () => print(record),
       ),
     ),

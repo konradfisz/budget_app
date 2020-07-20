@@ -62,6 +62,18 @@ class BabiesBloc {
     return _repository.myBabies();
   }
 
+  Stream<QuerySnapshot> userResults(String userId) {
+    return _repository.userResults(userId);
+  }
+
+  Future<void> addUser(String userId) {
+    return _repository.addUser(userId);
+  }
+
+  Future<void> addResult(String userId) {
+    return _repository.addResult(userId);
+  }
+
   //dispose all open sink
   void dispose() async {
     await _goalMessage.drain();
