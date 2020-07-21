@@ -44,11 +44,15 @@ class _RootPageState extends State<RootPage> {
         if (snapshot.hasData && !snapshot.hasError) {
           if (snapshot.data) {
             return LoginSignupBlocProvider(
-              child: BabiesBlocProvider(child: new MainScreen(),),
+              child: BabiesBlocProvider(
+                child: new MainScreen(),
+              ),
             );
           } else {
             return LoginSignupBlocProvider(
-              child: LoginSignupPage(),
+              child: BabiesBlocProvider(
+                child: LoginSignupPage(),
+              ),
             );
           }
         } else

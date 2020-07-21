@@ -1,3 +1,4 @@
+import 'package:budgetapp/blocs/babies_bloc.dart';
 import 'package:budgetapp/blocs/babies_bloc_provider.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
 import 'package:budgetapp/clients/auth_helpers/auth-exception-handler.dart';
@@ -17,17 +18,19 @@ class LoginSignupPage extends StatefulWidget {
 class _LoginSignupPageState extends State<LoginSignupPage> {
   final _formKey = new GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  LoginSignupBloc _bloc;
+  LoginSignupBloc _loginSingUpBloc;
+  BabiesBloc _babiesBloc;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _bloc = LoginSignupBlocProvider.of(context);
+    _loginSingUpBloc = LoginSignupBlocProvider.of(context);
+    _babiesBloc = BabiesBlocProvider.of(context);
   }
 
   @override
   void dispose() {
-    _bloc.dispose();
+    _loginSingUpBloc.dispose();
     super.dispose();
   }
 
@@ -97,6 +100,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
+  void _addUser() {
+    _loginSingUpBloc
+        .getCurrentUserId()
+        .then((value) => _babiesBloc.addUser(value));
+  }
+
   Widget _showForm() {
     return new Container(
         padding: EdgeInsets.all(16.0),
@@ -129,7 +138,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   Widget emailField() {
     return StreamBuilder(
-        stream: _bloc.email,
+        stream: _loginSingUpBloc.email,
         builder: (context, snapshot) {
           return Padding(
             padding: const EdgeInsets.fromLTRB(0.0, 24.0, 0.0, 0.0),
@@ -137,7 +146,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               maxLines: 1,
               keyboardType: TextInputType.emailAddress,
               autofocus: true,
-              onChanged: _bloc.changeEmail,
+              onChanged: _loginSingUpBloc.changeEmail,
               decoration: new InputDecoration(
                 hintText: Strings.emailHint,
                 icon: new Icon(
@@ -153,7 +162,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   Widget passwordField() {
     return StreamBuilder(
-      stream: _bloc.password,
+      stream: _loginSingUpBloc.password,
       builder: (context, AsyncSnapshot<String> snapshot) {
         return Padding(
           padding: const EdgeInsets.fromLTRB(0.0, 24.0, 0.0, 0.0),
@@ -161,7 +170,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             maxLines: 1,
             obscureText: true,
             autofocus: false,
-            onChanged: _bloc.changePassword,
+            onChanged: _loginSingUpBloc.changePassword,
             decoration: InputDecoration(
               icon: new Icon(
                 Icons.lock,
@@ -197,7 +206,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             child: new Text(_isLoginForm ? 'Login' : 'Create account',
                 style: new TextStyle(fontSize: 20.0, color: Colors.white)),
             onPressed: () {
-              if (_bloc.validateFields()) {
+              if (_loginSingUpBloc.validateFields()) {
                 authenticateUser();
               } else {
                 showErrorMessage(Strings.errorMessage);
@@ -222,7 +231,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   void authenticateUser() {
     if (_isLoginForm) {
-      _bloc.signIn().then(
+      _loginSingUpBloc.signIn().then(
             (status) => status == AuthResultStatus.successful
                 ? Navigator.pushReplacement(
                     context,
@@ -236,36 +245,36 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                     AuthExceptionHandler.generateExceptionMessage(status)),
           );
     } else {
-      _bloc.signUp().then(
+      _loginSingUpBloc.signUp().then(
             (status) => status == AuthResultStatus.successful
-                ? _showVerifyEmailSentDialog()
+                ? () => {_showVerifyEmailSentDialog(), _addUser()}
                 : showErrorMessage(
                     AuthExceptionHandler.generateExceptionMessage(status)),
           );
     }
   }
 
-  Future navigateToMain() async {
-    _bloc.isEmailVerified.listen((event) async {
-      if (event) {
-        return Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LoginSignupBlocProvider(
-              child: BabiesBlocProvider(child: MainScreen()),
-            ),
-          ),
-        );
-      } else {
-        _showVerifyEmailSentDialog();
-        signOut();
-      }
-    });
-  }
+  // Future navigateToMain() async {
+  //   _bloc.isEmailVerified.listen((event) async {
+  //     if (event) {
+  //       return Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => LoginSignupBlocProvider(
+  //             child: BabiesBlocProvider(child: MainScreen()),
+  //           ),
+  //         ),
+  //       );
+  //     } else {
+  //       _showVerifyEmailSentDialog();
+  //       signOut();
+  //     }
+  //   });
+  // }
 
   signOut() async {
     try {
-      _bloc.signOut();
+      _loginSingUpBloc.signOut();
       resetForm();
     } catch (e) {
       print(e);

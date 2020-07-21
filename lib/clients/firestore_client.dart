@@ -12,7 +12,7 @@ class FirestoreClient {
   Stream<QuerySnapshot> userResults(String userId) {
     return _firestore
         .collection("users")
-        .document("qoxKIvoKGfqy0oso9Xci")
+        .document(userId)
         .collection("results")
         .snapshots();
   }

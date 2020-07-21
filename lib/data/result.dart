@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Result {
-  final String id;
+  final int id;
   final String score;
   final DocumentReference reference;
 

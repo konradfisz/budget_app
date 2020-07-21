@@ -29,8 +29,8 @@ class _MainScreenState extends State<MainScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    LoginSignupBlocProvider(child: LoginSignupPage()),
+                builder: (context) => LoginSignupBlocProvider(
+                    child: BabiesBlocProvider(child: LoginSignupPage())),
               ),
             )
           });
@@ -68,6 +68,13 @@ class _MainScreenState extends State<MainScreen> {
       },
     );
   }
+
+  // @override
+  // void @override
+  // void initState() {
+  //   super.initState();
+
+  // }
 
   @override
   void didChangeDependencies() {
@@ -132,13 +139,12 @@ class _MainScreenState extends State<MainScreen> {
                 textBottom: Strings.headerBottomText,
                 offset: -20,
               ),
-              _buildBody(context, _babiesBloc),
-              FlatButton(
-                onPressed: () {
-                  _babiesBloc.addUser(_user.uid);
-                },
-                child: Text("Dodaj uzytkownika"),
-              ),
+              FutureBuilder<String>(
+                  future: _loginSignUpBloc.getCurrentUserId(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return LinearProgressIndicator();
+                    return _buildBody(context, _babiesBloc, snapshot.data);
+                  }),
               FlatButton(
                 onPressed: () {
                   _babiesBloc.addResult(_user.uid);
@@ -153,9 +159,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-Widget _buildBody(BuildContext context, BabiesBloc babiesBloc) {
+Widget _buildBody(BuildContext context, BabiesBloc babiesBloc, String userId) {
   return StreamBuilder<QuerySnapshot>(
-    stream: babiesBloc.userResults("qoxKIvoKGfqy0oso9Xci"),
+    stream: babiesBloc.userResults(userId),
     builder: (context, snapshot) {
       if (!snapshot.hasData) return LinearProgressIndicator();
 
