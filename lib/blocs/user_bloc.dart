@@ -4,7 +4,7 @@ import 'package:budgetapp/utils/strings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 
-class BabiesBloc {
+class UserBloc {
   final _repository = Repository();
   final _title = BehaviorSubject<String>();
   final _goalMessage = BehaviorSubject<String>();
@@ -57,10 +57,6 @@ class BabiesBloc {
   // Stream<DocumentSnapshot> myGoalsList(String email) {
   //   return _repository.myGoalList(email);
   // }
-
-  Stream<QuerySnapshot> myBabies() {
-    return _repository.myBabies();
-  }
 
   Stream<QuerySnapshot> userResults(String userId) {
     return _repository.userResults(userId);

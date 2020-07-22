@@ -1,8 +1,7 @@
-import 'package:budgetapp/blocs/babies_bloc.dart';
-import 'package:budgetapp/blocs/babies_bloc_provider.dart';
+import 'package:budgetapp/blocs/user_bloc.dart';
+import 'package:budgetapp/blocs/user_bloc_provider.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
-import 'package:budgetapp/data/baby.dart';
 import 'package:budgetapp/data/result.dart';
 import 'package:budgetapp/ui/log_in/log_in_sign_up.dart';
 import 'package:budgetapp/ui/main/main_header.dart';
@@ -21,7 +20,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   FirebaseUser _user;
   LoginSignupBloc _loginSignUpBloc;
-  BabiesBloc _babiesBloc;
+  UserBloc _userBloc;
 
   signOut() async {
     try {
@@ -30,7 +29,7 @@ class _MainScreenState extends State<MainScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) => LoginSignupBlocProvider(
-                    child: BabiesBlocProvider(child: LoginSignupPage())),
+                    child: UserBlocProvider(child: LoginSignupPage())),
               ),
             )
           });
@@ -69,17 +68,10 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // @override
-  // void @override
-  // void initState() {
-  //   super.initState();
-
-  // }
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _babiesBloc = BabiesBlocProvider.of(context);
+    _userBloc = UserBlocProvider.of(context);
     _loginSignUpBloc = LoginSignupBlocProvider.of(context);
     _loginSignUpBloc.getCurrentUser().then((value) => _user = value);
     _loginSignUpBloc.isEmailVerified.listen((event) async {
@@ -92,7 +84,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void dispose() {
     _loginSignUpBloc.dispose();
-    _babiesBloc.dispose();
+    _userBloc.dispose();
     super.dispose();
   }
 
@@ -143,11 +135,11 @@ class _MainScreenState extends State<MainScreen> {
                   stream: _loginSignUpBloc.getCurrentUserId(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return LinearProgressIndicator();
-                    return _buildBody(context, _babiesBloc, snapshot.data);
+                    return _buildBody(context, _userBloc, snapshot.data);
                   }),
               FlatButton(
                 onPressed: () {
-                  _babiesBloc.addResult(_user.uid);
+                  _userBloc.addResult(_user.uid);
                 },
                 child: Text("Dodaj wynik"),
               ),
@@ -159,7 +151,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-Widget _buildBody(BuildContext context, BabiesBloc babiesBloc, String userId) {
+Widget _buildBody(BuildContext context, UserBloc babiesBloc, String userId) {
   return StreamBuilder<QuerySnapshot>(
     stream: babiesBloc.userResults(userId),
     builder: (context, snapshot) {

@@ -1,5 +1,5 @@
-import 'package:budgetapp/blocs/babies_bloc.dart';
-import 'package:budgetapp/blocs/babies_bloc_provider.dart';
+import 'package:budgetapp/blocs/user_bloc.dart';
+import 'package:budgetapp/blocs/user_bloc_provider.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
 import 'package:budgetapp/clients/auth_helpers/auth-exception-handler.dart';
 import 'package:budgetapp/clients/auth_helpers/auth-result-status.dart';
@@ -19,13 +19,13 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   final _formKey = new GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   LoginSignupBloc _loginSingUpBloc;
-  BabiesBloc _babiesBloc;
+  UserBloc _babiesBloc;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _loginSingUpBloc = LoginSignupBlocProvider.of(context);
-    _babiesBloc = BabiesBlocProvider.of(context);
+    _babiesBloc = UserBlocProvider.of(context);
   }
 
   @override
@@ -238,7 +238,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => LoginSignupBlocProvider(
-                        child: BabiesBlocProvider(child: MainScreen()),
+                        child: UserBlocProvider(child: MainScreen()),
                       ),
                     ),
                   )
