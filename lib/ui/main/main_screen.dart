@@ -139,8 +139,8 @@ class _MainScreenState extends State<MainScreen> {
                 textBottom: Strings.headerBottomText,
                 offset: -20,
               ),
-              FutureBuilder<String>(
-                  future: _loginSignUpBloc.getCurrentUserId(),
+              StreamBuilder<String>(
+                  stream: _loginSignUpBloc.getCurrentUserId(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return LinearProgressIndicator();
                     return _buildBody(context, _babiesBloc, snapshot.data);
@@ -183,7 +183,6 @@ Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
   final record = Result.fromSnapshot(data);
 
   return Padding(
-    key: ValueKey(record.id),
     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
     child: Container(
       decoration: BoxDecoration(

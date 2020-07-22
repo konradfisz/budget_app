@@ -70,7 +70,7 @@ class BabiesBloc {
     return _repository.addUser(userId);
   }
 
-  Future<void> addResult(String userId) {
+  Stream<void> addResult(String userId) {
     return _repository.addResult(userId);
   }
 

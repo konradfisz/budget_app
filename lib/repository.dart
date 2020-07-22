@@ -32,5 +32,5 @@ class Repository {
 
   Future<void> addUser(String userId) => _firestoreClient.addUser(userId);
 
-  Future<void> addResult(String userId) => _firestoreClient.addResult(userId);
+  Stream<void> addResult(String userId) => _firestoreClient.addResult(userId);
 }

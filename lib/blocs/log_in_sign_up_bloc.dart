@@ -18,8 +18,7 @@ class LoginSignupBloc {
 
   Stream<String> get password => _password.stream.transform(_validatePassword);
 
-  Stream<bool> get isSignedIn =>
-      getCurrentUserId().asStream().transform(_isSigned);
+  Stream<bool> get isSignedIn => getCurrentUserId().transform(_isSigned);
 
   Stream<bool> get shouldShowPhoto => _shouldShowPhoto.stream;
 
@@ -73,10 +72,11 @@ class LoginSignupBloc {
     return _repository.signUp(_email.value, _password.value);
   }
 
-  Future<String> getCurrentUserId() {
+  Stream<String> getCurrentUserId() {
     return _repository
         .getCurrentUser()
-        .then((value) => value != null ? value.uid : null);
+        .then((value) => value != null ? value.uid : null)
+        .asStream();
   }
 
   Future<FirebaseUser> getCurrentUser() {

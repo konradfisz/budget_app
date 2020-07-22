@@ -75,7 +75,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         body: _showForm());
   }
 
-  void _showVerifyEmailSentDialog() {
+  void _addUserAndshowVerifyEmailSentDialog() {
+    _addUser();
     if (!_isLoginForm) {
       toggleFormMode();
     }
@@ -103,7 +104,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   void _addUser() {
     _loginSingUpBloc
         .getCurrentUserId()
-        .then((value) => _babiesBloc.addUser(value));
+        .listen((event) => _babiesBloc.addUser(event));
   }
 
   Widget _showForm() {
@@ -247,30 +248,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     } else {
       _loginSingUpBloc.signUp().then(
             (status) => status == AuthResultStatus.successful
-                ? () => {_showVerifyEmailSentDialog(), _addUser()}
+                ? _addUserAndshowVerifyEmailSentDialog()
                 : showErrorMessage(
                     AuthExceptionHandler.generateExceptionMessage(status)),
           );
     }
   }
-
-  // Future navigateToMain() async {
-  //   _bloc.isEmailVerified.listen((event) async {
-  //     if (event) {
-  //       return Navigator.pushReplacement(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => LoginSignupBlocProvider(
-  //             child: BabiesBlocProvider(child: MainScreen()),
-  //           ),
-  //         ),
-  //       );
-  //     } else {
-  //       _showVerifyEmailSentDialog();
-  //       signOut();
-  //     }
-  //   });
-  // }
 
   signOut() async {
     try {

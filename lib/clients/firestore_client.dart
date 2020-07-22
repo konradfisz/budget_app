@@ -24,14 +24,14 @@ class FirestoreClient {
     });
   }
 
-  Future<void> addResult(String userId) {
+  Stream<void> addResult(String userId) {
     return _firestore
         .collection("users")
         .document(userId)
         .collection("results")
         .add({
-      "id": 5,
-      "score": "21313",
-    });
+      "id": 8,
+      "score": "1111111111",
+    }).asStream();
   }
 }
