@@ -1,18 +1,15 @@
+import 'package:budgetapp/data/category.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Result {
   final int id;
   final String score;
-  final DocumentReference reference;
-
-  Result.fromMap(Map<String, dynamic> map, {this.reference})
-      : assert(map['score'] != null),
-        assert(map['id'] != null),
-        score = map['score'],
-        id = map['id'];
+  final DocumentReference category;
 
   Result.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data, reference: snapshot.reference);
+      : score = snapshot['score'],
+        id = snapshot['id'],
+        category = snapshot['category'];
 
   @override
   String toString() => "Result<$id:$score>";

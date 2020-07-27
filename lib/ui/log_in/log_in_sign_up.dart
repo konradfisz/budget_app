@@ -83,7 +83,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // return object of type Dialog
         return AlertDialog(
           title: new Text("Verify your account"),
           content:

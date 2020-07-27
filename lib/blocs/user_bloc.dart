@@ -66,8 +66,12 @@ class UserBloc {
     return _repository.addUser(userId);
   }
 
-  Stream<void> addResult(String userId) {
+  Stream<DocumentReference> addResult(String userId) {
     return _repository.addResult(userId);
+  }
+
+  Stream<void> deleteResult(String userId, String documentId) {
+    return _repository.deleteResult(userId, documentId);
   }
 
   //dispose all open sink

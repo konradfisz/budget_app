@@ -30,5 +30,9 @@ class Repository {
 
   Future<void> addUser(String userId) => _firestoreClient.addUser(userId);
 
-  Stream<void> addResult(String userId) => _firestoreClient.addResult(userId);
+  Stream<DocumentReference> addResult(String userId) =>
+      _firestoreClient.addResult(userId);
+
+  Stream<void> deleteResult(String userId, String documentId) =>
+      _firestoreClient.deleteResult(userId, documentId);
 }

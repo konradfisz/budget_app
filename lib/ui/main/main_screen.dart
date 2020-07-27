@@ -2,6 +2,7 @@ import 'package:budgetapp/blocs/user_bloc.dart';
 import 'package:budgetapp/blocs/user_bloc_provider.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
+import 'package:budgetapp/data/category.dart';
 import 'package:budgetapp/data/result.dart';
 import 'package:budgetapp/ui/log_in/log_in_sign_up.dart';
 import 'package:budgetapp/ui/main/main_header.dart';
@@ -94,13 +95,8 @@ class _MainScreenState extends State<MainScreen> {
       children: <Widget>[
         Scaffold(
           extendBodyBehindAppBar: true,
-          // backgroundColor: Colors.transparent,
           drawer: Drawer(
-            // Add a ListView to the drawer. This ensures the user can scroll
-            // through the options in the drawer if there isn't enough vertical
-            // space to fit everything.
             child: ListView(
-              // Important: Remove any padding from the ListView.
               padding: EdgeInsets.zero,
               children: <Widget>[
                 DrawerHeader(
@@ -135,7 +131,11 @@ class _MainScreenState extends State<MainScreen> {
                   stream: _loginSignUpBloc.getCurrentUserId(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return LinearProgressIndicator();
-                    return _buildBody(context, _userBloc, snapshot.data);
+                    return _buildBody(
+                      context,
+                      snapshot.data,
+                      _userBloc,
+                    );
                   }),
               FlatButton(
                 onPressed: () {
@@ -151,27 +151,32 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-Widget _buildBody(BuildContext context, UserBloc babiesBloc, String userId) {
+Widget _buildBody(BuildContext context, String userId, UserBloc userBloc) {
   return StreamBuilder<QuerySnapshot>(
-    stream: babiesBloc.userResults(userId),
+    stream: userBloc.userResults(userId),
     builder: (context, snapshot) {
       if (!snapshot.hasData) return LinearProgressIndicator();
 
-      return _buildList(context, snapshot.data.documents);
+      return _buildList(context, snapshot.data.documents, userId, userBloc);
     },
   );
 }
 
-Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
+Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot,
+    String userId, UserBloc userBloc) {
   return Expanded(
     child: ListView(
       padding: const EdgeInsets.only(top: 20.0),
-      children: snapshot.map((data) => _buildListItem(context, data)).toList(),
+      children: snapshot
+          .map((data) => _buildListItem(context, data, userId, userBloc))
+          .toList(),
     ),
   );
 }
 
-Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
+Widget _buildListItem(BuildContext context, DocumentSnapshot data,
+    String userId, UserBloc userBloc) {
+  print(data.data.toString());
   final record = Result.fromSnapshot(data);
 
   return Padding(
@@ -182,10 +187,9 @@ Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
         borderRadius: BorderRadius.circular(5.0),
       ),
       child: ListTile(
-        title: Text(record.id.toString()),
-        trailing: Text(record.score.toString()),
-        onTap: () => print(record),
-      ),
+          title: Text(record.category.documentID),
+          trailing: Text(record.score.toString()),
+          onTap: () => userBloc.deleteResult(userId, data.documentID)),
     ),
   );
 }
