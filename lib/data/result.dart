@@ -3,14 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Result {
   final int id;
-  final String score;
+  final String expense;
+  final Timestamp expenseDate;
   final DocumentReference category;
 
   Result.fromSnapshot(DocumentSnapshot snapshot)
-      : score = snapshot['score'],
+      : expense = snapshot['expense'],
         id = snapshot['id'],
-        category = snapshot['category'];
+        category = snapshot['category'],
+        expenseDate = snapshot['expenseDate'];
 
   @override
-  String toString() => "Result<$id:$score>";
+  String toString() => "Result<$id:$expense>";
 }

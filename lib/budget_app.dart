@@ -4,10 +4,12 @@ import 'package:budgetapp/clients/auth_client.dart';
 import 'package:budgetapp/root_page.dart';
 import 'package:budgetapp/utils/strings.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class BudgetApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    initializeDateFormatting('pl', null);
     return MaterialApp(
       title: Strings.appTitle,
       theme: ThemeData(

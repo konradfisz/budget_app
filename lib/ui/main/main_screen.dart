@@ -10,6 +10,8 @@ import 'package:budgetapp/utils/strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen();
@@ -188,7 +190,8 @@ Widget _buildListItem(BuildContext context, DocumentSnapshot data,
       ),
       child: ListTile(
           title: Text(record.category.documentID),
-          trailing: Text(record.score.toString()),
+          trailing: Text(
+              DateFormat("dd-MM-yyyy").format(record.expenseDate.toDate())),
           onTap: () => userBloc.deleteResult(userId, data.documentID)),
     ),
   );

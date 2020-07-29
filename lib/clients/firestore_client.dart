@@ -26,10 +26,10 @@ class FirestoreClient {
         .document(userId)
         .collection("results")
         .add({
-      "id": 8,
-      "score": "1111111111",
+      "expense": "1111111111",
       "category":
-          _firestore.collection("categories").document("9XYsZ6e4qBKopWXoafXE")
+          _firestore.collection("categories").document("9XYsZ6e4qBKopWXoafXE"),
+      "expenseDate": Timestamp.now()
     }).asStream();
   }
 
