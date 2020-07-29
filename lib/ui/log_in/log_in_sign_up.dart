@@ -19,50 +19,27 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   final _formKey = new GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   LoginSignupBloc _loginSingUpBloc;
-  UserBloc _babiesBloc;
+  UserBloc _userBloc;
+  bool _isLoginForm;
+
+  @override
+  void initState() {
+    _isLoginForm = true;
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _loginSingUpBloc = LoginSignupBlocProvider.of(context);
-    _babiesBloc = UserBlocProvider.of(context);
+    _userBloc = UserBlocProvider.of(context);
   }
 
   @override
   void dispose() {
     _loginSingUpBloc.dispose();
+    _userBloc.dispose();
     super.dispose();
-  }
-
-  bool _isLoginForm;
-  bool _isLoading;
-
-  // Check if form is valid before perform login or signup
-  bool validateAndSave() {
-    final form = _formKey.currentState;
-    if (form.validate()) {
-      form.save();
-      return true;
-    }
-    return false;
-  }
-
-  @override
-  void initState() {
-    _isLoading = false;
-    _isLoginForm = true;
-    super.initState();
-  }
-
-  void resetForm() {
-    _formKey.currentState.reset();
-  }
-
-  void toggleFormMode() {
-    resetForm();
-    setState(() {
-      _isLoginForm = !_isLoginForm;
-    });
   }
 
   @override
@@ -75,37 +52,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         body: _showForm());
   }
 
-  void _addUserAndshowVerifyEmailSentDialog() {
-    _addUser();
-    if (!_isLoginForm) {
-      toggleFormMode();
-    }
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: new Text("Verify your account"),
-          content:
-              new Text("Link to verify account has been sent to your email"),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("Dismiss"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _addUser() {
-    _loginSingUpBloc
-        .getCurrentUserId()
-        .listen((event) => _babiesBloc.addUser(event));
-  }
-
   Widget _showForm() {
     return new Container(
         padding: EdgeInsets.all(16.0),
@@ -114,17 +60,17 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           child: new ListView(
             shrinkWrap: true,
             children: <Widget>[
-              showLogo(),
+              logo(),
               emailField(),
               passwordField(),
-              showPrimaryButton(),
-              showSecondaryButton(),
+              confirmationButton(),
+              toggleFormModeButton(),
             ],
           ),
         ));
   }
 
-  Widget showLogo() {
+  Widget logo() {
     return Container(
       height: 100,
       width: 100,
@@ -185,15 +131,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
-  Widget showSecondaryButton() {
-    return new FlatButton(
-        child: new Text(
-            _isLoginForm ? 'Create an account' : 'Have an account? Sign in',
-            style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
-        onPressed: toggleFormMode);
-  }
-
-  Widget showPrimaryButton() {
+  Widget confirmationButton() {
     return new Padding(
         padding: EdgeInsets.fromLTRB(0.0, 45.0, 0.0, 0.0),
         child: SizedBox(
@@ -214,6 +152,56 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             },
           ),
         ));
+  }
+
+  Widget toggleFormModeButton() {
+    return new FlatButton(
+        child: new Text(
+            _isLoginForm ? 'Create an account' : 'Have an account? Sign in',
+            style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
+        onPressed: toggleFormMode);
+  }
+
+  void _addUserAndshowVerifyEmailSentDialog() {
+    _addUser();
+    if (!_isLoginForm) {
+      toggleFormMode();
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("Verify your account"),
+          content:
+              new Text("Link to verify account has been sent to your email"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Dismiss"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addUser() {
+    _loginSingUpBloc
+        .getCurrentUserId()
+        .listen((event) => _userBloc.addUser(event));
+  }
+
+  void resetForm() {
+    _formKey.currentState.reset();
+  }
+
+  void toggleFormMode() {
+    resetForm();
+    setState(() {
+      _isLoginForm = !_isLoginForm;
+    });
   }
 
   void showErrorMessage(String message) {
@@ -261,5 +249,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     } catch (e) {
       print(e);
     }
+  }
+
+  bool validateAndSave() {
+    final form = _formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      return true;
+    }
+    return false;
   }
 }
