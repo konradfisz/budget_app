@@ -22,14 +22,4 @@ class UserBloc {
   Stream<void> deleteResult(String userId, String documentId) {
     return _repository.deleteResult(userId, documentId);
   }
-
-  //dispose all open sink
-  void dispose() async {
-    await _goalMessage.drain();
-    _goalMessage.close();
-    await _title.drain();
-    _title.close();
-    await _showProgress.drain();
-    _showProgress.close();
-  }
 }

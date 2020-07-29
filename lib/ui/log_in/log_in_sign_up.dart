@@ -38,7 +38,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   @override
   void dispose() {
     _loginSingUpBloc.dispose();
-    _userBloc.dispose();
     super.dispose();
   }
 
