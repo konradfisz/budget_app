@@ -39,7 +39,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void dispose() {
     _loginSignUpBloc.dispose();
-    _userBloc.dispose();
     super.dispose();
   }
 
@@ -141,8 +140,7 @@ class _MainScreenState extends State<MainScreen> {
         ),
         child: ListTile(
             title: Text(record.category.documentID),
-            trailing: Text(
-                DateFormat("dd-MM-yyyy").format(record.expenseDate.toDate())),
+            trailing: Text(DateFormat().format(record.expenseDate.toDate())),
             onTap: () => userBloc.deleteResult(userId, data.documentID)),
       ),
     );
