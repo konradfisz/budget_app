@@ -11,31 +11,21 @@ class LoginSignupBloc {
   final _email = BehaviorSubject<String>();
   final _password = BehaviorSubject<String>();
   final _isSignedIn = BehaviorSubject<bool>();
-  final _shouldShowPhoto = BehaviorSubject<bool>.seeded(false);
-  final _userId = BehaviorSubject<String>();
 
   Stream<String> get email => _email.stream.transform(_validateEmail);
 
   Stream<String> get password => _password.stream.transform(_validatePassword);
 
-  Stream<bool> get isSignedIn =>
-      getCurrentUserId().asStream().transform(_isSigned);
-
-  Stream<bool> get shouldShowPhoto => _shouldShowPhoto.stream;
+  Stream<bool> get isSignedIn => getCurrentUserId().transform(_isSigned);
 
   Stream<bool> get isEmailVerified =>
       isEmailVerifiedFuture().asStream().transform(_isVerified);
 
   String get emailAddress => _email.value;
 
-  String get userId => _userId.value;
-
-  // Change data
   Function(String) get changeEmail => _email.sink.add;
 
   Function(String) get changePassword => _password.sink.add;
-
-  Function(bool) get showPhoto => _shouldShowPhoto.sink.add;
 
   final _validateEmail =
       StreamTransformer<String, String>.fromHandlers(handleData: (email, sink) {
@@ -73,10 +63,11 @@ class LoginSignupBloc {
     return _repository.signUp(_email.value, _password.value);
   }
 
-  Future<String> getCurrentUserId() {
+  Stream<String> getCurrentUserId() {
     return _repository
         .getCurrentUser()
-        .then((value) => value != null ? value.uid : null);
+        .then((value) => value != null ? value.uid : null)
+        .asStream();
   }
 
   Future<FirebaseUser> getCurrentUser() {

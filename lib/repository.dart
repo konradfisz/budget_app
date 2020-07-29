@@ -25,5 +25,14 @@ class Repository {
 
   Future<bool> isEmailVerified() => _firebaseAuthClient.isEmailVerified();
 
-  Stream<QuerySnapshot> myBabies() => _firestoreClient.myBabies();
+  Stream<QuerySnapshot> userResults(String userId) =>
+      _firestoreClient.userResults(userId);
+
+  Future<void> addUser(String userId) => _firestoreClient.addUser(userId);
+
+  Stream<DocumentReference> addResult(String userId) =>
+      _firestoreClient.addResult(userId);
+
+  Stream<void> deleteResult(String userId, String documentId) =>
+      _firestoreClient.deleteResult(userId, documentId);
 }

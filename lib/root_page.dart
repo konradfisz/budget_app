@@ -1,3 +1,4 @@
+import 'package:budgetapp/blocs/user_bloc_provider.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
 import 'package:budgetapp/ui/log_in/log_in_sign_up.dart';
@@ -43,11 +44,15 @@ class _RootPageState extends State<RootPage> {
         if (snapshot.hasData && !snapshot.hasError) {
           if (snapshot.data) {
             return LoginSignupBlocProvider(
-              child: new MainScreen(),
+              child: UserBlocProvider(
+                child: new MainScreen(),
+              ),
             );
           } else {
             return LoginSignupBlocProvider(
-              child: LoginSignupPage(),
+              child: UserBlocProvider(
+                child: LoginSignupPage(),
+              ),
             );
           }
         } else
