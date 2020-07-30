@@ -2,15 +2,15 @@ import 'package:budgetapp/data/category.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Result {
-  final int id;
+  final String id;
+  final DocumentReference category;
   final String expense;
   final Timestamp expenseDate;
-  final DocumentReference category;
 
   Result.fromSnapshot(DocumentSnapshot snapshot)
-      : expense = snapshot['expense'],
-        id = snapshot['id'],
+      : id = snapshot.documentID,
         category = snapshot['category'],
+        expense = snapshot['expense'],
         expenseDate = snapshot['expenseDate'];
 
   @override

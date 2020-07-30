@@ -116,20 +116,22 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot,
       String userId, UserBloc userBloc) {
+    List<Result> sortedList =
+        snapshot.map((e) => Result.fromSnapshot(e)).toList();
+    sortedList.sort((a, b) => b.expenseDate.compareTo(a.expenseDate));
     return Expanded(
       child: ListView(
-        padding: const EdgeInsets.only(top: 20.0),
-        children: snapshot
-            .map((data) => _buildListItem(context, data, userId, userBloc))
-            .toList(),
-      ),
+          padding: const EdgeInsets.only(top: 20.0),
+          children: sortedList
+              .map(
+                  (result) => _buildListItem(context, result, userId, userBloc))
+              .toList()),
     );
   }
 
-  Widget _buildListItem(BuildContext context, DocumentSnapshot data,
-      String userId, UserBloc userBloc) {
-    print(data.data.toString());
-    final record = Result.fromSnapshot(data);
+  Widget _buildListItem(
+      BuildContext context, Result result, String userId, UserBloc userBloc) {
+    print(result.toString());
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -139,9 +141,9 @@ class _MainScreenState extends State<MainScreen> {
           borderRadius: BorderRadius.circular(5.0),
         ),
         child: ListTile(
-            title: Text(record.category.documentID),
-            trailing: Text(DateFormat().format(record.expenseDate.toDate())),
-            onTap: () => userBloc.deleteResult(userId, data.documentID)),
+            title: Text(result.category.documentID),
+            trailing: Text(DateFormat().format(result.expenseDate.toDate())),
+            onTap: () => userBloc.deleteResult(userId, result.id)),
       ),
     );
   }
