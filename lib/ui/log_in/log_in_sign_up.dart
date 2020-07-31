@@ -1,5 +1,5 @@
-import 'package:budgetapp/blocs/user_bloc.dart';
-import 'package:budgetapp/blocs/user_bloc_provider.dart';
+import 'package:budgetapp/blocs/main_screen_bloc.dart';
+import 'package:budgetapp/blocs/main_screen_bloc_provider.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
 import 'package:budgetapp/clients/auth_helpers/auth-exception-handler.dart';
 import 'package:budgetapp/clients/auth_helpers/auth-result-status.dart';
@@ -19,7 +19,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   final _formKey = new GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   LoginSignupBloc _loginSingUpBloc;
-  UserBloc _userBloc;
+  MainScreenBloc _mainScreenBloc;
   bool _isLoginForm;
 
   @override
@@ -32,7 +32,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _loginSingUpBloc = LoginSignupBlocProvider.of(context);
-    _userBloc = UserBlocProvider.of(context);
+    _mainScreenBloc = MainScreenBlocProvider.of(context);
   }
 
   @override
@@ -189,7 +189,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   void _addUser() {
     _loginSingUpBloc
         .getCurrentUserId()
-        .listen((event) => _userBloc.addUser(event));
+        .listen((event) => _mainScreenBloc.addUser(event));
   }
 
   void resetForm() {
@@ -224,7 +224,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => LoginSignupBlocProvider(
-                        child: UserBlocProvider(child: MainScreen()),
+                        child: MainScreenBlocProvider(child: MainScreen()),
                       ),
                     ),
                   )

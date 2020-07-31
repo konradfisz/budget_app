@@ -20,7 +20,7 @@ class _MyHeaderState extends State<MyHeader> {
       clipper: MyClipper(),
       child: Container(
         padding: EdgeInsets.only(left: 40, top: 50, right: 20),
-        height: 350,
+        height: 200,
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(

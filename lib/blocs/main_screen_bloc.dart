@@ -4,7 +4,7 @@ import 'package:budgetapp/utils/strings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 
-class UserBloc {
+class MainScreenBloc {
   final _repository = Repository();
 
   Stream<QuerySnapshot> userResults(String userId) {

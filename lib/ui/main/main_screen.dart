@@ -1,5 +1,5 @@
-import 'package:budgetapp/blocs/user_bloc.dart';
-import 'package:budgetapp/blocs/user_bloc_provider.dart';
+import 'package:budgetapp/blocs/main_screen_bloc.dart';
+import 'package:budgetapp/blocs/main_screen_bloc_provider.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc.dart';
 import 'package:budgetapp/blocs/log_in_sign_up_bloc_provider.dart';
 import 'package:budgetapp/data/result.dart';
@@ -21,12 +21,12 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   FirebaseUser _user;
   LoginSignupBloc _loginSignUpBloc;
-  UserBloc _userBloc;
+  MainScreenBloc _mainScreenBloc;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _userBloc = UserBlocProvider.of(context);
+    _mainScreenBloc = MainScreenBlocProvider.of(context);
     _loginSignUpBloc = LoginSignupBlocProvider.of(context);
     _loginSignUpBloc.getCurrentUser().then((value) => _user = value);
     _loginSignUpBloc.isEmailVerified.listen((event) async {
@@ -78,7 +78,7 @@ class _MainScreenState extends State<MainScreen> {
               MyHeader(
                 textTop: Strings.headerTopText,
                 textBottom: Strings.headerBottomText,
-                offset: -20,
+                offset: 10,
               ),
               StreamBuilder<String>(
                   stream: _loginSignUpBloc.getCurrentUserId(),
@@ -87,12 +87,12 @@ class _MainScreenState extends State<MainScreen> {
                     return _buildBody(
                       context,
                       snapshot.data,
-                      _userBloc,
+                      _mainScreenBloc,
                     );
                   }),
               FlatButton(
                 onPressed: () {
-                  _userBloc.addResult(_user.uid);
+                  _mainScreenBloc.addResult(_user.uid);
                 },
                 child: Text("Dodaj wynik"),
               ),
@@ -103,7 +103,8 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _buildBody(BuildContext context, String userId, UserBloc userBloc) {
+  Widget _buildBody(
+      BuildContext context, String userId, MainScreenBloc userBloc) {
     return StreamBuilder<QuerySnapshot>(
       stream: userBloc.userResults(userId),
       builder: (context, snapshot) {
@@ -115,7 +116,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot,
-      String userId, UserBloc userBloc) {
+      String userId, MainScreenBloc userBloc) {
     List<Result> sortedList =
         snapshot.map((e) => Result.fromSnapshot(e)).toList();
     sortedList.sort((a, b) => b.expenseDate.compareTo(a.expenseDate));
@@ -129,8 +130,8 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _buildListItem(
-      BuildContext context, Result result, String userId, UserBloc userBloc) {
+  Widget _buildListItem(BuildContext context, Result result, String userId,
+      MainScreenBloc userBloc) {
     print(result.toString());
 
     return Padding(
@@ -155,7 +156,7 @@ class _MainScreenState extends State<MainScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) => LoginSignupBlocProvider(
-                    child: UserBlocProvider(child: LoginSignupPage())),
+                    child: MainScreenBlocProvider(child: LoginSignupPage())),
               ),
             )
           });
